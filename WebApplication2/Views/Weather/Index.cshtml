@@ -1,0 +1,120 @@
+﻿@{
+    ViewData["Title"] = "Weather";
+}
+
+<div id="containerInner" class="text-center">
+    <h1 class="display-4">Weather </h1>
+
+    <div class="col-md-12 mb-2">
+        <select v-model="selectedCountry" @@change="getCity">
+            <option v-for="country in countries" :value="country">{{country}}</option>
+        </select>
+    </div>
+    <div class="col-md-12 mb-2" v-if="cities.length" @@change="getWeather">
+        <select v-model="selectedCity">
+            <option v-for="city in cities" :value="city">{{city}}</option>
+        </select>
+    </div>
+    <div class="col-md-12 table" v-if="!!weather.time">
+        <div class="row">
+            <div class="col-md-6">
+                Location (Longitude : Latitude)
+            </div>
+            <div class="col-md-6">
+                {{weather.location.lon}} - {{weather.location.lat}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                Time
+            </div>
+            <div class="col-md-6">
+                <td>{{new Date(weather.time*1000)}}</td>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Wind</th>
+                    <th>Visibility</th>
+                    <th>Sky Condition</th>
+                    <th>Temperature</th>
+                    <th>Dew Point</th>
+                    <th>Relative Humidity</th>
+                    <th>Pressure</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{weather.wind.speed}} , {{weather.wind.deg}}</td>
+                    <td>{{weather.visibility}}</td>
+                    <td> {{weather.skyCondition.all}} </td>
+                    <td>{{weather.humid.tempC}} C - {{weather.humid.tempF}} F</td>
+                    <td>{{weather.humid.dew_point.toFixed(2)}}</td>
+                    <td>{{weather.humid.humidity.toFixed(2)}}</td>
+                    <td>{{weather.humid.pressure.toFixed(2)}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    var weather = new Vue({
+        el: '#containerInner',
+        beforeMount() {
+            this.getCountry();
+        },
+        data: {
+            countries: [],
+            selectedCountry: '',
+            cities: [],
+            selectedCity: '',
+            weather: {}
+        },
+        methods: {
+            getCountry: function () {
+                var self = this;
+                $.ajax({
+                    type: 'GET',
+                    url: "/Weather/getListCountry",
+                    cache: false,
+                    dataType: "json",
+                    success: function (resp) {
+                        console.log(resp);
+                        self.countries = ['Choose Country', ...resp];
+                        self.selectedCountry = 'Choose Country';
+                    }
+                });
+            },
+            getCity: function () {
+                var self = this;
+                if (self.selectedCountry == "") return;
+                $.ajax({
+                    type: 'GET',
+                    url: '/Weather/getCity?country=' + self.selectedCountry,
+                    cache: false,
+                    dataType: "json",
+                    success: function (resp) {
+                        if (resp != undefined) {
+                            self.cities = ['Choose City', ...resp];
+                            self.selectedCity = 'Choose City';
+                        }
+                    }
+                });
+            },
+            getWeather: function () {
+                var self = this;
+                $.ajax({
+                    type: 'GET',
+                    url: '/Weather/GetWeather?city=' + self.selectedCity,
+                    cache: false,
+                    dataType: "json",
+                    success: function (resp) {
+                        console.log(resp);
+                        self.weather = resp;
+                    }
+                });
+            }
+        }
+    });
+</script>
