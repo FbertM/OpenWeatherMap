@@ -25,7 +25,6 @@ namespace WebApplication2
             services.AddHttpClient();
             services.AddScoped<ICountry, CountryModel>();
             services.AddScoped<IWeather, WeatherModel>();
-
             services.AddControllersWithViews();
 
         }

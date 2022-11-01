@@ -10,7 +10,7 @@ using WebApplication2.Interface;
 
 namespace WebApplication2.Models
 {
-    public class APIConfig 
+    public class APIConfig
     {
         public string APIKey { get; set; }
         public string APIUrl { get; set; }
@@ -23,27 +23,16 @@ namespace WebApplication2.Models
         public (string, string) db;
         private readonly IHttpClientFactory _client;
         private APIConfig config;
-        private LoadWeatherModel loadModel;
+        public string cache_id = "Weather_";
 
-        public WeatherModel(IMemoryCache cache, IHttpClientFactory client,IConfiguration configuration)
+        public WeatherModel(IMemoryCache cache, IHttpClientFactory client, IConfiguration configuration)
         {
             _cache = cache;
             _client = client;
-            this.config  = configuration.GetSection("APIOpenWeather").Get<APIConfig>();
+            this.config = configuration.GetSection("APIOpenWeather").Get<APIConfig>();
         }
 
-        public WeatherDBModel LoadAPI(string city)
-        {
-            loadModel = new LoadWeatherModel();
-            return loadModel.getWeatherURI(_cache, config, city, _client);
-        }
-    }
-
-    public class LoadWeatherModel
-    {
-        public string cache_id = "Weather_";
-
-        public WeatherDBModel getWeatherURI(IMemoryCache _cache, APIConfig config, string city,IHttpClientFactory _client)
+        public WeatherDBModel getWeatherURI(string city)
         {
             return _cache.GetOrCreateAsync<WeatherDBModel>(cache_id + city, async entry =>
             {
@@ -62,5 +51,11 @@ namespace WebApplication2.Models
                 }
             }).Result;
         }
+
+        public WeatherDBModel LoadAPI(string city)
+        {
+            return getWeatherURI(city);
+        }
     }
 }
+
