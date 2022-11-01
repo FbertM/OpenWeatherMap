@@ -25,6 +25,7 @@ namespace TestProject1
                 .Build();
             _serviceProvider = new DependencyResolver(webHost);
             _countryDB = _serviceProvider.GetService<ICountry>();
+            _mock = new MockWeather(_serviceProvider);
 
         }
 
