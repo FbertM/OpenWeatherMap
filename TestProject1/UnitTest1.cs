@@ -40,9 +40,6 @@ namespace TestProject1
 
         [Test]
         [TestCase("United Kingdom")]
-        [TestCase("United States")]
-        [TestCase("Indonesia")]
-        [TestCase("Taiwan")]
         [TestCase("China")]
         public void GetCity(string country)
         {
@@ -50,12 +47,8 @@ namespace TestProject1
             Assert.AreEqual(true, res.Any());
         }
         [Test]
-        [TestCase("New Zealand")]
         [TestCase("Surabaya")]
         [TestCase("Jakarta")]
-        [TestCase("Taipei")]
-        [TestCase("Shanghai")]
-        [TestCase("Singapore")]
         public void GetWeather(string city)
         {
             var res = _mock.GetWeather(city);
